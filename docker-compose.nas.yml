@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  naver-crawler:
+    build:
+      context: .
+      dockerfile: Dockerfile.nas
+    container_name: naver-land-crawler
+    ports:
+      - "3080:3000" # Next.js 웹 UI (외부 3080 → 컨테이너 3000)
+      - "6090:6080" # noVNC 브라우저 뷰어
+    environment:
+      - NODE_ENV=production
+      - DISPLAY=:99
+      - VNC_ENABLED=true
+      - VNC_PASSWORD=naver1234
+    # volumes:       # 필요시 주석 해제
+    #   - ./data:/app/data
+    restart: unless-stopped
+    shm_size: '2gb' # Chrome에 필요한 공유 메모리
+
+    # 리소스 제한 (DS220+ 최적화)
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G

@@ -474,8 +474,8 @@ export default function InteractiveCrawlerPage() {
                                         <span className="text-emerald-400 font-medium">{articles.length}개</span>
                                     </div>
 
-                                    <div className="max-h-[400px] overflow-y-auto space-y-2">
-                                        {articles.slice(0, 30).map((article, i) => (
+                                    <div className="max-h-[600px] overflow-y-auto space-y-2">
+                                        {articles.map((article, i) => (
                                             <div
                                                 key={i}
                                                 className="bg-[var(--bg-tertiary)] rounded-lg p-3 cursor-pointer hover:bg-[var(--bg-tertiary)]/80 hover:ring-1 hover:ring-emerald-500/50 transition-all"
@@ -497,11 +497,6 @@ export default function InteractiveCrawlerPage() {
                                                 </div>
                                             </div>
                                         ))}
-                                        {articles.length > 30 && (
-                                            <p className="text-center text-xs text-[var(--text-tertiary)] py-2">
-                                                ... 외 {articles.length - 30}개 더
-                                            </p>
-                                        )}
                                     </div>
 
                                     <a href="/data" className="block mt-4 w-full text-center py-2 bg-emerald-600 rounded-lg text-sm font-medium hover:bg-emerald-500">

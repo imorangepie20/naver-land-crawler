@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import {
-    Loader2, CheckCircle, MapPin, Monitor, ExternalLink, Database, RefreshCw, Globe
+    Loader2, CheckCircle, MapPin, Monitor, ExternalLink, Database, RefreshCw, Globe, Tv, X
 } from 'lucide-react';
 
 // 전국 시/도 목록
@@ -46,6 +46,8 @@ export default function InteractiveCrawlerPage() {
     const [message, setMessage] = useState('');
     const [articles, setArticles] = useState<any[]>([]);
     const [pageUrl, setPageUrl] = useState('');
+    const [showVnc, setShowVnc] = useState(false);
+    const [vncUrl, setVncUrl] = useState('');
 
     // API 호출 헬퍼
     const callApi = async (action: string, params: any = {}) => {
@@ -71,6 +73,14 @@ export default function InteractiveCrawlerPage() {
         const interval = setInterval(updateCurrentUrl, 3000);
         return () => clearInterval(interval);
     }, [updateCurrentUrl]);
+
+    // VNC URL 설정 (같은 호스트, 포트 6090)
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const host = window.location.hostname;
+            setVncUrl(`http://${host}:6090/vnc.html?autoconnect=true`);
+        }
+    }, []);
 
     // 시/도 변경 시 시/군/구 목록 가져오기
     useEffect(() => {
@@ -508,6 +518,55 @@ export default function InteractiveCrawlerPage() {
                     </div>
                 </div>
             </main>
+
+            {/* VNC 팝업 버튼 (고정) */}
+            <button
+                onClick={() => setShowVnc(true)}
+                className="fixed bottom-6 right-6 bg-purple-600 hover:bg-purple-500 text-white p-4 rounded-full shadow-lg z-40 transition-all hover:scale-110"
+                title="원격 브라우저 보기"
+            >
+                <Tv className="w-6 h-6" />
+            </button>
+
+            {/* VNC 모달 */}
+            {showVnc && (
+                <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+                    <div className="bg-[var(--bg-secondary)] rounded-xl w-full max-w-6xl h-[85vh] flex flex-col">
+                        {/* 모달 헤더 */}
+                        <div className="flex items-center justify-between p-4 border-b border-[var(--border-primary)]">
+                            <div className="flex items-center gap-3">
+                                <Tv className="w-5 h-5 text-purple-400" />
+                                <h3 className="font-medium">원격 브라우저 (noVNC)</h3>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <a
+                                    href={vncUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-sm text-[var(--text-secondary)] hover:text-white flex items-center gap-1"
+                                >
+                                    <ExternalLink className="w-4 h-4" />
+                                    새 탭에서 열기
+                                </a>
+                                <button
+                                    onClick={() => setShowVnc(false)}
+                                    className="p-2 hover:bg-[var(--bg-tertiary)] rounded-lg transition-colors"
+                                >
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </div>
+                        </div>
+                        {/* VNC iframe */}
+                        <div className="flex-1 p-2">
+                            <iframe
+                                src={vncUrl}
+                                className="w-full h-full rounded-lg border border-[var(--border-primary)]"
+                                allow="clipboard-read; clipboard-write"
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
